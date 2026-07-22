@@ -34,7 +34,6 @@ const workspaceSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Use async — no next() parameter needed in modern Mongoose
 workspaceSchema.pre("save", async function () {
   if (!this.isNew) return;
 

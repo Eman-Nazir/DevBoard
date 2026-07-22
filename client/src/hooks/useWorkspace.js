@@ -12,15 +12,8 @@ import {
   updateProjectAPI, deleteProjectAPI, getArchivedProjectsAPI,
 } from "../api/project.api.js";
 
-/**
- * IMPORTANT: Side effects (setActiveWorkspace, setWorkspaces) are NOT done
- * inside queryFn. queryFn must be a pure data-fetching function.
- * Components read from the cache directly — no Zustand sync needed.
- * workspaceStore is only used for UI state (which workspace is "active"),
- * not as a server-state cache.
- */
 
-// ─── Workspaces ────────────────────────────────────────────────────────────────
+//  Workspaces ─
 export const useGetMyWorkspaces = () => {
   return useQuery({
     queryKey: queryKeys.workspaces.all(),
@@ -37,7 +30,7 @@ export const useGetWorkspace = (id) => {
     queryKey: queryKeys.workspaces.detail(id),
     queryFn: async () => {
       const data = await getWorkspaceAPI(id);
-      return data.data; // { workspace, role }
+      return data.data; 
     },
     enabled: !!id,
     staleTime: 2 * 60 * 1000,
@@ -50,7 +43,6 @@ export const useCreateWorkspace = () => {
   return useMutation({
     mutationFn: createWorkspaceAPI,
     onSuccess: (data) => {
-      // Add to list cache immediately — no refetch needed
       queryClient.setQueryData(queryKeys.workspaces.all(), (old = []) => [
         { ...data.data.workspace, role: "admin" },
         ...old,
@@ -98,7 +90,7 @@ export const useDeleteWorkspace = () => {
   });
 };
 
-// ─── Members ───────────────────────────────────────────────────────────────────
+//  Members ─
 export const useGetMembers = (workspaceId) => {
   return useQuery({
     queryKey: queryKeys.workspaces.members(workspaceId),
@@ -146,7 +138,7 @@ export const useRemoveMember = (workspaceId) => {
   });
 };
 
-// ─── Projects ──────────────────────────────────────────────────────────────────
+//  Projects 
 export const useGetProjects = (workspaceId) => {
   return useQuery({
     queryKey: queryKeys.projects.byWorkspace(workspaceId),
@@ -176,7 +168,6 @@ export const useCreateProject = (workspaceId) => {
   return useMutation({
     mutationFn: (data) => createProjectAPI({ workspaceId, data }),
     onSuccess: (data) => {
-      // Add optimistically to cache
       queryClient.setQueryData(queryKeys.projects.byWorkspace(workspaceId), (old = []) => [
         data.data.project,
         ...old,
@@ -195,11 +186,9 @@ export const useUpdateProject = (workspaceId, projectId) => {
     onSuccess: (data) => {
       const updated = data.data.project;
 
-      // Update single project cache
       queryClient.setQueryData(queryKeys.projects.detail(projectId), updated);
 
       if (updated.status === "archived") {
-        // Remove from active list immediately
         queryClient.setQueryData(
           queryKeys.projects.byWorkspace(workspaceId),
           (old = []) => old.filter((p) => p._id !== projectId)
@@ -227,7 +216,6 @@ export const useUpdateProject = (workspaceId, projectId) => {
           (old = []) => old.map((p) => (p._id === projectId ? updated : p))
         );
       }
-      // No toast here — caller handles the message
     },
     onError: (err) => toast.error(err.response?.data?.message || "Failed to update project"),
   });
@@ -250,7 +238,7 @@ export const useDeleteProject = (workspaceId) => {
   });
 };
 
-// ─── Archived Projects ─────────────────────────────────────────────────────────
+//  Archived Projects 
 export const useGetArchivedProjects = (workspaceId) => {
   return useQuery({
     queryKey: [...queryKeys.projects.byWorkspace(workspaceId), "archived"],

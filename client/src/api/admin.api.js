@@ -15,6 +15,16 @@ export const getAllWorkspacesAPI = async ({ page = 1 } = {}) => {
   return res.data;
 };
 
+export const getAllProjectsAPI = async ({ page = 1 } = {}) => {
+  const res = await axiosInstance.get(`/admin/projects?page=${page}`);
+  return res.data;
+};
+
+export const getAdminLogsAPI = async ({ page = 1 } = {}) => {
+  const res = await axiosInstance.get(`/admin/logs?page=${page}`);
+  return res.data;
+};
+
 export const deleteUserAPI = async (userId) => {
   const res = await axiosInstance.delete(`/admin/users/${userId}`);
   return res.data;

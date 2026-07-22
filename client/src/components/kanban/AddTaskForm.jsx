@@ -15,7 +15,7 @@ const PRIORITY_COLORS = {
 const AddTaskForm = ({ workspaceId, projectId, columnId, onClose }) => {
   const [title, setTitle] = useState("");
   const [priority, setPriority] = useState("medium");
-  const submittingRef = useRef(false); // ← prevents double submit
+  const submittingRef = useRef(false); //  prevents double submit
   const { mutate: createTask, isPending } = useCreateTask(workspaceId, projectId);
 
   const handleSubmit = () => {

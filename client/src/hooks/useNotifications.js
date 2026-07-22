@@ -12,7 +12,7 @@ import {
   clearReadNotificationsAPI,
 } from "../api/notification.api.js";
 
-// ─── Get notifications (paginated) ────────────────────────────────────────────
+//  Get notifications 
 export const useGetNotifications = (page = 1) => {
   return useQuery({
     queryKey: [...queryKeys.notifications.all(), page],
@@ -21,11 +21,11 @@ export const useGetNotifications = (page = 1) => {
       return data.data;
     },
     staleTime: 30 * 1000,
-    placeholderData: keepPreviousData, // v5 syntax — keeps old data while fetching next page
+    placeholderData: keepPreviousData,
   });
 };
 
-// ─── Get unread count (for bell badge) ────────────────────────────────────────
+//  Get unread count for bell badge
 export const useGetUnreadCount = () => {
   return useQuery({
     queryKey: queryKeys.notifications.unreadCount(),
@@ -38,7 +38,7 @@ export const useGetUnreadCount = () => {
   });
 };
 
-// ─── Socket listener — real-time new notifications ────────────────────────────
+//  Socket listener — real-time new notifications 
 export const useNotificationSocket = () => {
   const socket = useSocket();
   const queryClient = useQueryClient();
@@ -88,7 +88,7 @@ export const useNotificationSocket = () => {
   }, [socket, queryClient]);
 };
 
-// ─── Mark single as read ──────────────────────────────────────────────────────
+//  Mark single as read 
 export const useMarkAsRead = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -118,7 +118,7 @@ export const useMarkAsRead = () => {
   });
 };
 
-// ─── Mark all as read ─────────────────────────────────────────────────────────
+//  Mark all as read 
 export const useMarkAllAsRead = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -141,7 +141,7 @@ export const useMarkAllAsRead = () => {
   });
 };
 
-// ─── Delete single notification ───────────────────────────────────────────────
+//  Delete single notification ──
 export const useDeleteNotification = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -166,7 +166,7 @@ export const useDeleteNotification = () => {
   });
 };
 
-// ─── Clear all read notifications ─────────────────────────────────────────────
+//  Clear all read notifications 
 export const useClearReadNotifications = () => {
   const queryClient = useQueryClient();
   return useMutation({

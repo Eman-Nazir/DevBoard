@@ -10,11 +10,6 @@ const router = Router();
 
 router.use(verifyJWT);
 
-/**
- * Analytics routes are mounted at /api/v1 in app.js.
- * Full paths are defined here so they stay self-documenting
- * and consistent with the role middleware workspaceId lookup.
- */
 
 // GET /api/v1/workspaces/:workspaceId/projects/:projectId/analytics
 router.get(

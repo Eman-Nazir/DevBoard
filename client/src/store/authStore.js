@@ -18,7 +18,6 @@ const useAuthStore = create((set, get) => ({
   },
 }));
 
-// Forced logout when refresh token expires (fired from axiosInstance)
 window.addEventListener("auth:logout", () => {
   useAuthStore.getState().logout();
   if (!window.location.pathname.includes("/login")) {

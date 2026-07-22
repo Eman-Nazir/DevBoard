@@ -14,12 +14,12 @@ import { upload } from "../middleware/multer.middleware.js";
 
 const router = Router();
 
-// ── Public ─────────────────────────────────────────────────────────────────────
+// ── Public 
 router.post("/register", validateRegister, register);
 router.post("/login", validateLogin, login);
 router.post("/refresh-token", refreshAccessToken);
 
-// ── Protected ──────────────────────────────────────────────────────────────────
+// ── Protected 
 router.post("/logout", verifyJWT, logout);
 router.get("/me", verifyJWT, getMe);
 router.patch("/profile", verifyJWT, upload.single("avatar"), updateProfile);

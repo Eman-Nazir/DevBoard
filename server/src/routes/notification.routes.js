@@ -11,7 +11,8 @@ import { verifyJWT } from "../middleware/auth.middleware.js";
 
 const router = Router();
 
-router.use(verifyJWT); // All notification routes require authentication
+router.use(verifyJWT); 
+// All notification routes require authentication
 
 router.get("/", getNotifications);               // GET  /notifications?page=1&limit=20
 router.get("/unread-count", getUnreadCount);     // GET  /notifications/unread-count

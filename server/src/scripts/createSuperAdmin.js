@@ -19,15 +19,12 @@ const run = async () => {
     const existingUser = await User.findOne({ email }).select("+isSuperAdmin +password");
 
     if (existingUser) {
-      // User exists — update password + grant super admin
-      // Set password directly on the document so pre-save hook hashes it
       existingUser.password = password;
       existingUser.isSuperAdmin = true;
       existingUser.name = name;
-      await existingUser.save(); // pre-save hook hashes password automatically
+      await existingUser.save(); 
       console.log(` "${existingUser.name}" updated and granted Super Admin`);
     } else {
-      // Create fresh super admin account
       const user = await User.create({ name, email, password, isSuperAdmin: true });
       console.log(` Super Admin created: ${name} (${email})`);
     }

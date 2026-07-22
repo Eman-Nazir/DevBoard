@@ -16,7 +16,7 @@ const axiosInstance = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-// ─── Request interceptor — attach access token ─────────────────────────────
+// ─── Request interceptor attach access token 
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("accessToken");
@@ -26,7 +26,7 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// ─── Response interceptor — silent token refresh on 401 ────────────────────
+// ─── Response interceptor silent token refresh on 401 
 let isRefreshing = false;
 let failedQueue = [];
 
@@ -42,7 +42,7 @@ axiosInstance.interceptors.response.use(
 
     if (!error.response) {
       return Promise.reject(
-        new Error("Network error — make sure the server is running on port 5000")
+        new Error("Network error make sure the server is running on port 5000")
       );
     }
 

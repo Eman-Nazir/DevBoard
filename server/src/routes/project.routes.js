@@ -11,6 +11,7 @@ import { verifyJWT } from "../middleware/auth.middleware.js";
 import { checkRole } from "../middleware/role.middleware.js";
 import { validateCreateProject } from "../validators/project.validator.js";
 
+
 const router = Router({ mergeParams: true });
 
 router.use(verifyJWT);
@@ -27,4 +28,9 @@ router.get("/:id", checkRole(["admin", "member", "viewer"]), getProject);
 router.patch("/:id", checkRole(["admin", "member"]), updateProject);
 router.delete("/:id", checkRole(["admin"]), deleteProject);
 
+
 export default router;
+
+
+
+

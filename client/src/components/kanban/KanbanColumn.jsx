@@ -14,21 +14,20 @@ const KanbanColumn = ({ column, tasks, onAddTask, onEditTask, activeId, canEdit 
   const taskIds = tasks.map((t) => t._id);
 
   return (
-    <div className="flex flex-col w-72 flex-shrink-0">
-      {/* Header */}
+  
+    <div className="flex flex-col w-full h-full">
       <div className="flex items-center justify-between mb-3 px-1">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 min-w-0">
           <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: column.color }} />
-          <span className="text-white font-medium text-sm">{column.title}</span>
-          <span className="text-gray-600 text-xs bg-gray-800 px-1.5 py-0.5 rounded-full">
+          <span className="text-white font-medium text-sm truncate">{column.title}</span>
+          <span className="text-gray-600 text-xs bg-gray-800 px-1.5 py-0.5 rounded-full flex-shrink-0">
             {tasks.length}
           </span>
         </div>
-        {/* Only show add button for admin/member */}
         {canEdit && (
           <button
             onClick={() => onAddTask(column.id)}
-            className="p-1 rounded-md text-gray-500 hover:text-white hover:bg-gray-800 transition-colors"
+            className="p-1.5 sm:p-1 rounded-md text-gray-500 hover:text-white hover:bg-gray-800 active:bg-gray-800 transition-colors flex-shrink-0"
             title={`Add task to ${column.title}`}
           >
             <Plus size={14} />
@@ -36,7 +35,6 @@ const KanbanColumn = ({ column, tasks, onAddTask, onEditTask, activeId, canEdit 
         )}
       </div>
 
-      {/* Drop zone */}
       <div
         ref={setNodeRef}
         className={cn(
@@ -71,13 +69,12 @@ const KanbanColumn = ({ column, tasks, onAddTask, onEditTask, activeId, canEdit 
           </motion.div>
         )}
 
-        {/* Add task button — hidden for viewers */}
         {canEdit && (
           <button
             onClick={() => onAddTask(column.id)}
-            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:text-gray-400 hover:bg-gray-800 transition-colors text-xs"
+            className="w-full flex items-center gap-2 px-3 py-2.5 sm:py-2 rounded-lg text-gray-600 hover:text-gray-400 hover:bg-gray-800 active:bg-gray-800 transition-colors text-xs"
           >
-            <Plus size={13} />
+            <Plus size={13} className="flex-shrink-0" />
             Add task
           </button>
         )}

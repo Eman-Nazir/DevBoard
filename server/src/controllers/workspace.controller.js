@@ -1,5 +1,7 @@
 import { Workspace } from "../models/Workspace.model.js";
 import { Member } from "../models/Member.model.js";
+import { Project } from "../models/Project.model.js";
+import { Task } from "../models/Task.model.js";
 import { ActivityLog } from "../models/ActivityLog.model.js";
 import { User } from "../models/User.model.js";
 import { ApiError } from "../utils/ApiError.js";
@@ -7,7 +9,12 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { sendEmail } from "../utils/sendEmail.js";
 
-// ─── Create Workspace ──────────────────────────────────────────────────────────
+// Note: workspace membership/role checks are handled by the checkRole
+// middleware at the route level (see workspace.routes.js) which attaches
+// req.member and req.memberRole Controllers below use those directly
+// instead of re-querying the Member collection
+
+// ─── Create Workspace 
 const createWorkspace = asyncHandler(async (req, res) => {
   const { name, description } = req.body;
 
@@ -39,7 +46,7 @@ const createWorkspace = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, { workspace }, "Workspace created successfully"));
 });
 
-// ─── Get All Workspaces for current user ───────────────────────────────────────
+// ─── Get All Workspaces for current user 
 const getMyWorkspaces = asyncHandler(async (req, res) => {
   const memberships = await Member.find({ user: req.user._id })
     .populate("workspace")
@@ -57,7 +64,7 @@ const getMyWorkspaces = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { workspaces }, "Workspaces fetched successfully"));
 });
 
-// ─── Get Single Workspace ──────────────────────────────────────────────────────
+// ─── Get Single Workspace 
 const getWorkspace = asyncHandler(async (req, res) => {
   const workspace = await Workspace.findById(req.params.id).populate(
     "owner",
@@ -66,36 +73,38 @@ const getWorkspace = asyncHandler(async (req, res) => {
 
   if (!workspace) throw new ApiError(404, "Workspace not found");
 
-  const member = await Member.findOne({
-    workspace: workspace._id,
-    user: req.user._id,
-  });
-
-  if (!member) throw new ApiError(403, "You are not a member of this workspace");
-
+  // req.member is attached by the checkRole middleware on this route
   return res
     .status(200)
-    .json(new ApiResponse(200, { workspace, role: member.role }, "Workspace fetched"));
+    .json(new ApiResponse(200, { workspace, role: req.memberRole }, "Workspace fetched"));
 });
 
-// ─── Update Workspace ──────────────────────────────────────────────────────────
+// ─── Update Workspace 
 const updateWorkspace = asyncHandler(async (req, res) => {
   const { name, description } = req.body;
 
   const workspace = await Workspace.findById(req.params.id);
   if (!workspace) throw new ApiError(404, "Workspace not found");
 
+
   if (name) workspace.name = name;
   if (description !== undefined) workspace.description = description;
 
   await workspace.save();
+
+  await ActivityLog.create({
+    workspace: workspace._id,
+    actor: req.user._id,
+    action: "updated_workspace",
+    meta: { name: workspace.name },
+  });
 
   return res
     .status(200)
     .json(new ApiResponse(200, { workspace }, "Workspace updated successfully"));
 });
 
-// ─── Delete Workspace ──────────────────────────────────────────────────────────
+// ─── Delete Workspace 
 const deleteWorkspace = asyncHandler(async (req, res) => {
   const workspace = await Workspace.findById(req.params.id);
   if (!workspace) throw new ApiError(404, "Workspace not found");
@@ -104,15 +113,38 @@ const deleteWorkspace = asyncHandler(async (req, res) => {
     throw new ApiError(403, "Only the workspace owner can delete it");
   }
 
-  await Workspace.findByIdAndDelete(req.params.id);
-  await Member.deleteMany({ workspace: req.params.id });
+  // Snapshot counts before anything is deleted, for the log entry
+  const [projectCount, memberCount] = await Promise.all([
+    Project.countDocuments({ workspace: workspace._id }),
+    Member.countDocuments({ workspace: workspace._id }),
+  ]);
+
+
+  await ActivityLog.create({
+    workspace: workspace._id,
+    actor: req.user._id,
+    action: "deleted_workspace",
+    meta: {
+      workspaceName: workspace.name,
+      projectCount,
+      memberCount,
+    },
+  });
+
+
+  await Promise.all([
+    Workspace.findByIdAndDelete(workspace._id),
+    Member.deleteMany({ workspace: workspace._id }),
+    Project.deleteMany({ workspace: workspace._id }),
+    Task.deleteMany({ workspace: workspace._id }),
+  ]);
 
   return res
     .status(200)
     .json(new ApiResponse(200, {}, "Workspace deleted successfully"));
 });
 
-// ─── Invite Member by Email ────────────────────────────────────────────────────
+// ─── Invite Member by Email 
 const inviteMember = asyncHandler(async (req, res) => {
   const { email, role = "member" } = req.body;
   const workspaceId = req.params.id;
@@ -121,6 +153,7 @@ const inviteMember = asyncHandler(async (req, res) => {
 
   const workspace = await Workspace.findById(workspaceId);
   if (!workspace) throw new ApiError(404, "Workspace not found");
+
 
   const invitedUser = await User.findOne({ email });
   if (!invitedUser) {
@@ -170,7 +203,7 @@ const inviteMember = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, `${invitedUser.name} has been added to the workspace`));
 });
 
-// ─── Join by Invite Code ───────────────────────────────────────────────────────
+// ─── Join by Invite Code 
 const joinByInviteCode = asyncHandler(async (req, res) => {
   const { code } = req.params;
 
@@ -195,6 +228,13 @@ const joinByInviteCode = asyncHandler(async (req, res) => {
     invitedBy: workspace.owner,
   });
 
+  await ActivityLog.create({
+    workspace: workspace._id,
+    actor: req.user._id,
+    action: "joined_workspace",
+    meta: {},
+  });
+
   return res
     .status(200)
     .json(new ApiResponse(200, { workspace }, "Joined workspace successfully"));
@@ -202,6 +242,10 @@ const joinByInviteCode = asyncHandler(async (req, res) => {
 
 // ─── Get Activity Log ──────────────────────────────────────────────────────────
 const getActivityLog = asyncHandler(async (req, res) => {
+  const workspace = await Workspace.findById(req.params.id);
+  if (!workspace) throw new ApiError(404, "Workspace not found");
+
+
   const logs = await ActivityLog.find({ workspace: req.params.id })
     .populate("actor", "name avatar")
     .sort({ createdAt: -1 })

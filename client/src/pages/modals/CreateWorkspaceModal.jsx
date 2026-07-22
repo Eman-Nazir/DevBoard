@@ -17,7 +17,7 @@ const CreateWorkspaceModal = ({ onClose }) => {
   const onSubmit = (data) => createWorkspace(data, { onSuccess: onClose });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
       <motion.div
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         onClick={onClose}
@@ -27,11 +27,11 @@ const CreateWorkspaceModal = ({ onClose }) => {
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 10 }}
-        className="relative bg-gray-900 border border-gray-800 rounded-2xl p-6 w-full max-w-md z-10"
+        className="relative bg-gray-900 border border-gray-800 rounded-2xl p-5 sm:p-6 w-full max-w-md z-10 max-h-[92vh] overflow-y-auto"
       >
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="text-white font-semibold text-lg">Create workspace</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-white transition-colors"><X size={18} /></button>
+        <div className="flex items-center justify-between mb-4 sm:mb-5">
+          <h2 className="text-white font-semibold text-base sm:text-lg">Create workspace</h2>
+          <button onClick={onClose} className="text-gray-500 hover:text-white transition-colors shrink-0 p-1 -mr-1"><X size={18} /></button>
         </div>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
@@ -52,7 +52,7 @@ const CreateWorkspaceModal = ({ onClose }) => {
               className="w-full bg-gray-800 border border-gray-700 text-white placeholder-gray-600 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition resize-none"
             />
           </div>
-          <div className="flex gap-3 pt-1">
+          <div className="flex flex-col-reverse sm:flex-row gap-3 pt-1">
             <button type="button" onClick={onClose} className="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-300 font-medium rounded-lg py-2.5 text-sm transition-colors">Cancel</button>
             <button type="submit" disabled={isPending} className="flex-1 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white font-medium rounded-lg py-2.5 text-sm transition-colors">
               {isPending ? "Creating..." : "Create workspace"}

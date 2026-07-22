@@ -17,7 +17,7 @@ const Spinner = ({ size = "md", className = "" }) => {
 };
 
 export const FullPageSpinner = () => (
-  <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+  <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
     <Spinner size="lg" />
   </div>
 );

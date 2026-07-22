@@ -21,12 +21,12 @@ const router = Router();
 
 router.use(verifyJWT); // All workspace routes require authentication
 
-// ── Public workspace actions ───────────────────────────────────────────────────
+// ── Public workspace actions 
 router.post("/", validateCreateWorkspace, createWorkspace);
 router.get("/", getMyWorkspaces);
 router.post("/join/:code", joinByInviteCode);
 
-// ── Workspace-specific actions (role-checked) ──────────────────────────────────
+// ── Workspace-specific actions role-checked
 router.get("/:id", checkRole(["admin", "member", "viewer"]), getWorkspace);
 router.patch("/:id", checkRole(["admin"]), validateUpdateWorkspace, updateWorkspace);
 router.delete("/:id", deleteWorkspace); // Owner-only check is inside the controller

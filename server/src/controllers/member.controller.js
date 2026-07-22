@@ -5,22 +5,30 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
-// ─── Get All Members ───────────────────────────────────────────────────────────
+// ─── Get All Members 
 const getMembers = asyncHandler(async (req, res) => {
   const { workspaceId } = req.params;
 
-  const members = await Member.find({ workspace: workspaceId })
+  const rawMembers = await Member.find({ workspace: workspaceId })
     .populate("user", "name email avatar createdAt")
     .populate("invitedBy", "name")
     .sort({ createdAt: 1 })
     .lean();
 
+  const validMembers = rawMembers.filter((m) => m.user);
+  const orphanedIds = rawMembers.filter((m) => !m.user).map((m) => m._id);
+
+  if (orphanedIds.length > 0) {
+    Member.deleteMany({ _id: { $in: orphanedIds } }).catch(() => {
+    });
+  }
+
   return res
     .status(200)
-    .json(new ApiResponse(200, { members }, "Members fetched successfully"));
+    .json(new ApiResponse(200, { members: validMembers }, "Members fetched successfully"));
 });
 
-// ─── Update Member Role ────────────────────────────────────────────────────────
+// ─── Update Member Role 
 const updateMemberRole = asyncHandler(async (req, res) => {
   const { workspaceId, userId } = req.params;
   const { role } = req.body;
@@ -29,7 +37,6 @@ const updateMemberRole = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Role must be admin, member, or viewer");
   }
 
-  // Prevent changing the workspace owner's role
   const workspace = await Workspace.findById(workspaceId).lean();
   if (!workspace) throw new ApiError(404, "Workspace not found");
 
@@ -37,7 +44,6 @@ const updateMemberRole = asyncHandler(async (req, res) => {
     throw new ApiError(403, "Cannot change the workspace owner's role");
   }
 
-  // Prevent an admin from demoting themselves if they're the only admin
   if (req.user._id.toString() === userId && role !== "admin") {
     const adminCount = await Member.countDocuments({
       workspace: workspaceId,
@@ -70,21 +76,19 @@ const updateMemberRole = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { member }, "Member role updated successfully"));
 });
 
-// ─── Remove Member ─────────────────────────────────────────────────────────────
+// ─── Remove Member 
 const removeMember = asyncHandler(async (req, res) => {
   const { workspaceId, userId } = req.params;
 
   const workspace = await Workspace.findById(workspaceId).lean();
   if (!workspace) throw new ApiError(404, "Workspace not found");
 
-  // Owner can never be removed
   if (workspace.owner.toString() === userId) {
     throw new ApiError(403, "The workspace owner cannot be removed");
   }
 
   const isRemovingSelf = req.user._id.toString() === userId;
 
-  // Non-admins can only remove themselves (leave workspace)
   if (!isRemovingSelf && req.memberRole !== "admin") {
     throw new ApiError(403, "Only admins can remove other members");
   }

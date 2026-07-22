@@ -24,9 +24,6 @@ const KanbanBoard = ({ project, tasks, workspaceId, projectId, canEdit = true })
   const { mutate: moveTask } = useMoveTask(workspaceId, projectId);
   const { mutate: reorderTasks } = useReorderTasks(workspaceId, projectId);
 
-  // ── Sensors — disabled for viewers ────────────────────────────────────────
-  // When canEdit is false, activation distance is set to Infinity
-  // so dragging never starts no matter how far the user moves the mouse
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: { distance: canEdit ? 8 : Infinity },
@@ -48,7 +45,7 @@ const KanbanBoard = ({ project, tasks, workspaceId, projectId, canEdit = true })
   );
 
   const handleDragStart = ({ active }) => {
-    if (!canEdit) return; // extra guard
+    if (!canEdit) return;
     const task = tasks.find((t) => t._id === active.id);
     if (task) setActiveTask(task);
   };
@@ -88,7 +85,6 @@ const KanbanBoard = ({ project, tasks, workspaceId, projectId, canEdit = true })
 
   return (
     <>
-      {/* Viewer banner */}
       {!canEdit && (
         <div className="mb-4 flex items-center gap-2 bg-amber-400/10 border border-amber-400/20 text-amber-400 text-xs px-4 py-2.5 rounded-xl">
           <span>👁</span>
@@ -103,14 +99,18 @@ const KanbanBoard = ({ project, tasks, workspaceId, projectId, canEdit = true })
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
       >
-        <div className="flex gap-5 h-full overflow-x-auto pb-4 pr-4">
+        
+        <div className="flex gap-3 sm:gap-5 h-full overflow-x-auto pb-4 pr-3 sm:pr-4 snap-x snap-mandatory sm:snap-none scroll-px-3 sm:scroll-px-4 no-scrollbar">
           {project.columns
             .slice()
             .sort((a, b) => a.order - b.order)
             .map((column) => {
               const columnTasks = getColumnTasks(column.id);
               return (
-                <div key={column.id} className="flex flex-col w-72 flex-shrink-0">
+                <div
+                  key={column.id}
+                  className="flex flex-col w-[min(78vw,300px)] sm:w-72 flex-shrink-0 snap-start"
+                >
                   <KanbanColumn
                     column={column}
                     tasks={columnTasks}

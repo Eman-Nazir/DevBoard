@@ -14,10 +14,12 @@ import taskRoutes from "./routes/task.routes.js";
 import notificationRoutes from "./routes/notification.routes.js";
 import analyticsRoutes from "./routes/analytics.routes.js";
 import webhookRoutes from "./routes/webhook.routes.js";
+import adminRoutes from "./routes/admin.routes.js";
+import dashboardRoutes from "./routes/dashboard.routes.js";
 
 const app = express();
 
-// ── Security ───────────────────────────────────────────────────────────────────
+// ── Security 
 app.use(helmet());
 app.use(cors({
   origin: process.env.CLIENT_URL,
@@ -27,17 +29,17 @@ app.use(cors({
 }));
 app.use(apiLimiter);
 
-// ── Body parsing ───────────────────────────────────────────────────────────────
+// ── Body parsing 
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
 
-// ── Logging ────────────────────────────────────────────────────────────────────
+// ── Logging ─────
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
-// ── Health check ───────────────────────────────────────────────────────────────
+// ── Health check 
 app.get("/api/v1/health", (req, res) => {
   res.json({
     status: "ok",
@@ -47,7 +49,7 @@ app.get("/api/v1/health", (req, res) => {
   });
 });
 
-// ── Routes ─────────────────────────────────────────────────────────────────────
+// ── Routes ──────
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/workspaces", workspaceRoutes);
 app.use("/api/v1/workspaces/:workspaceId/members", memberRoutes);
@@ -55,14 +57,15 @@ app.use("/api/v1/workspaces/:workspaceId/projects", projectRoutes);
 app.use("/api/v1/workspaces/:workspaceId/projects/:projectId/tasks", taskRoutes);
 app.use("/api/v1/notifications", notificationRoutes);
 app.use("/api/v1", analyticsRoutes);
-app.use("/api/v1/webhooks", webhookRoutes); // No JWT — secured by signature verification
-
-// ── 404 handler ────────────────────────────────────────────────────────────────
+app.use("/api/v1/webhooks", webhookRoutes); 
+app.use("/api/v1/admin", adminRoutes); 
+app.use("/api/v1/dashboard", dashboardRoutes);
+// ── 404 handler ─
 app.use((req, res) => {
   res.status(404).json({ success: false, message: `Route ${req.originalUrl} not found` });
 });
 
-// ── Global error handler (must be last) ────────────────────────────────────────
+// ── Global error handler 
 app.use(errorMiddleware);
 
 export { app };

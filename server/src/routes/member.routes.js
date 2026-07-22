@@ -7,7 +7,7 @@ import {
 import { verifyJWT } from "../middleware/auth.middleware.js";
 import { checkRole } from "../middleware/role.middleware.js";
 
-const router = Router({ mergeParams: true }); // inherit :workspaceId from parent
+const router = Router({ mergeParams: true }); 
 
 router.use(verifyJWT);
 
@@ -18,7 +18,7 @@ router.get("/", checkRole(["admin", "member", "viewer"]), getMembers);
 router.patch("/:userId", checkRole(["admin"]), updateMemberRole);
 
 // DELETE /workspaces/:workspaceId/members/:userId
-// admin → can remove anyone | member/viewer → can only remove themselves (enforced in controller)
+// admin  can remove anyone | member/viewer  can only remove themselves 
 router.delete("/:userId", checkRole(["admin", "member", "viewer"]), removeMember);
 
 export default router;

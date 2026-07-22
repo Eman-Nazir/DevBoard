@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import AuthLayout from "./components/layout/AuthLayout.jsx";
 import DashboardLayout from "./components/layout/DashboardLayout.jsx";
 import ProtectedRoute from "./components/layout/ProtectedRoute.jsx";
+import AdminRoute from "./components/layout/AdminRoute.jsx";
 import LandingPage from "./pages/LandingPage.jsx";
 
 import LoginPage from "./pages/LoginPage.jsx";
@@ -19,11 +20,11 @@ import AdminPage from "./pages/admin/AdminPage.jsx";
 const NotFound = () => <NotFoundPage />;
 
 const router = createBrowserRouter([
-  // ── Public ───────────────────────────────────────────────────────────────────
+  // ── Public 
   { path: "/", element: <LandingPage /> },
   { path: "/invite/:code", element: <InvitePage /> },
 
-  // ── Auth ─────────────────────────────────────────────────────────────────────
+  // ── Auth ──
   {
     element: <AuthLayout />,
     children: [
@@ -32,17 +33,17 @@ const router = createBrowserRouter([
     ],
   },
 
-  // ── Super Admin (standalone — no DashboardLayout) ─────────────────────────────
+  // ── Super Admin 
   {
     path: "/admin",
     element: (
-      <ProtectedRoute>
+      <AdminRoute>
         <AdminPage />
-      </ProtectedRoute>
+      </AdminRoute>
     ),
   },
 
-  // ── App (protected + DashboardLayout) ────────────────────────────────────────
+  // ── App (protected + DashboardLayout) 
   {
     element: (
       <ProtectedRoute>

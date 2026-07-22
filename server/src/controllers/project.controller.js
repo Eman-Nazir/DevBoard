@@ -4,8 +4,9 @@ import { ActivityLog } from "../models/ActivityLog.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { io } from "../index.js";
 
-// ─── Create Project ────────────────────────────────────────────────────────────
+// ─── Create Project 
 const createProject = asyncHandler(async (req, res) => {
   const { workspaceId } = req.params;
   const { name, description, githubRepo } = req.body;
@@ -33,7 +34,7 @@ const createProject = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, { project }, "Project created successfully"));
 });
 
-// ─── Get Active Projects ───────────────────────────────────────────────────────
+// ─── Get Active Projects 
 const getProjects = asyncHandler(async (req, res) => {
   const { workspaceId } = req.params;
 
@@ -47,7 +48,7 @@ const getProjects = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { projects }, "Projects fetched successfully"));
 });
 
-// ─── Get Archived Projects ─────────────────────────────────────────────────────
+// ─── Get Archived Projects 
 const getArchivedProjects = asyncHandler(async (req, res) => {
   const { workspaceId } = req.params;
 
@@ -61,7 +62,7 @@ const getArchivedProjects = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { projects }, "Archived projects fetched"));
 });
 
-// ─── Get Single Project ────────────────────────────────────────────────────────
+// ─── Get Single Project 
 const getProject = asyncHandler(async (req, res) => {
   const { workspaceId } = req.params;
 
@@ -77,7 +78,7 @@ const getProject = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { project }, "Project fetched successfully"));
 });
 
-// ─── Update Project (also handles archive/unarchive) ──────────────────────────
+// ─── Update Project also handles archive/unarchive
 const updateProject = asyncHandler(async (req, res) => {
   const { workspaceId } = req.params;
   const { name, description, githubRepo, status } = req.body;
@@ -114,22 +115,30 @@ const updateProject = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { project }, "Project updated successfully"));
 });
 
-// ─── Delete Project ────────────────────────────────────────────────────────────
+// ─── Delete Project 
 const deleteProject = asyncHandler(async (req, res) => {
   const { workspaceId } = req.params;
 
   const project = await Project.findOne({ _id: req.params.id, workspace: workspaceId });
   if (!project) throw new ApiError(404, "Project not found");
 
+  await ActivityLog.create({
+    workspace: workspaceId,
+    actor: req.user._id,
+    action: "deleted_project",
+    meta: { projectName: project.name, projectId: project._id },
+  });
+
   await Promise.all([
     Project.findByIdAndDelete(project._id),
     Task.deleteMany({ project: project._id }),
-    ActivityLog.deleteMany({ project: project._id }),
   ]);
 
   return res
     .status(200)
     .json(new ApiResponse(200, {}, "Project and all its tasks deleted successfully"));
 });
+
+
 
 export { createProject, getProjects, getArchivedProjects, getProject, updateProject, deleteProject };

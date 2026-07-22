@@ -45,6 +45,8 @@ export const useProjectSocket = (projectId, handlers) => {
     if (handlers.onTaskMoved) socket.on("task:moved", handlers.onTaskMoved);
     if (handlers.onTaskDeleted) socket.on("task:deleted", handlers.onTaskDeleted);
     if (handlers.onTaskReordered) socket.on("task:reordered", handlers.onTaskReordered);
+    //  presence — fired whenever someone joins/leaves this project room
+    if (handlers.onPresenceUpdate) socket.on("presence:update", handlers.onPresenceUpdate);
 
     return () => {
       socket.emit("leave:project", projectId);
@@ -53,6 +55,7 @@ export const useProjectSocket = (projectId, handlers) => {
       socket.off("task:moved");
       socket.off("task:deleted");
       socket.off("task:reordered");
+      socket.off("presence:update");
     };
   }, [socket, projectId]);
 };

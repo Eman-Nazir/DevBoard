@@ -20,7 +20,7 @@ const generateAndSaveTokens = async (userId) => {
   return { accessToken, refreshToken };
 };
 
-// ─── Register ──────────────────────────────────────────────────────────────────
+// ─── Register 
 const register = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -47,7 +47,7 @@ const register = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, { user: userPayload, accessToken }, "Account created successfully"));
 });
 
-// ─── Login ─────────────────────────────────────────────────────────────────────
+// ─── Login 
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
@@ -65,7 +65,7 @@ const login = asyncHandler(async (req, res) => {
     name: user.name,
     email: user.email,
     avatar: user.avatar,
-    isSuperAdmin: user.isSuperAdmin || false, // ← included in response
+    isSuperAdmin: user.isSuperAdmin || false, 
     createdAt: user.createdAt,
   };
 
@@ -75,7 +75,7 @@ const login = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { user: userPayload, accessToken }, "Logged in successfully"));
 });
 
-// ─── Logout ────────────────────────────────────────────────────────────────────
+// ─── Logout 
 const logout = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(req.user._id, { refreshToken: "" });
   return res
@@ -84,7 +84,7 @@ const logout = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "Logged out successfully"));
 });
 
-// ─── Refresh Access Token ──────────────────────────────────────────────────────
+// ─── Refresh Access Token 
 const refreshAccessToken = asyncHandler(async (req, res) => {
   const incomingRefreshToken = req.cookies?.refreshToken;
   if (!incomingRefreshToken) throw new ApiError(401, "No refresh token — please log in");
@@ -112,7 +112,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { accessToken }, "Access token refreshed"));
 });
 
-// ─── Get Current User ──────────────────────────────────────────────────────────
+// ─── Get Current User 
 const getMe = asyncHandler(async (req, res) => {
   // Re-fetch with isSuperAdmin to keep it consistent everywhere
   const user = await User.findById(req.user._id).select("+isSuperAdmin");
@@ -133,7 +133,7 @@ const getMe = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { user: userPayload }, "User fetched successfully"));
 });
 
-// ─── Update Profile ────────────────────────────────────────────────────────────
+// ─── Update Profile 
 const updateProfile = asyncHandler(async (req, res) => {
   const { name } = req.body;
   const user = await User.findById(req.user._id);
@@ -163,7 +163,7 @@ const updateProfile = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { user: userPayload }, "Profile updated successfully"));
 });
 
-// ─── Change Password ───────────────────────────────────────────────────────────
+// ─── Change Password 
 const changePassword = asyncHandler(async (req, res) => {
   const { currentPassword, newPassword } = req.body;
 

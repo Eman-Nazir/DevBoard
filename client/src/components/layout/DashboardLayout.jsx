@@ -1,13 +1,17 @@
-import { Outlet, useParams } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import Sidebar from "./Sidebar.jsx";
 import Topbar from "./Topbar.jsx";
+import WorkspaceSwitcherModal from "./WorkspaceSwitcherModal.jsx";
 import useUIStore from "../../store/uiStore.js";
+import { useWorkspaceSwitcherShortcut } from "../../hooks/useWorkspaceSwitcherShortcut.js";
 import CreateWorkspaceModal from "../../pages/modals/CreateWorkspaceModal.jsx";
 import CreateProjectModal from "../../pages/modals/CreateProjectModal.jsx";
 
 const DashboardLayout = () => {
-  const { activeModal, closeModal } = useUIStore();
+  const { activeModal, closeModal, workspaceSwitcherOpen, closeWorkspaceSwitcher } = useUIStore();
+
+  useWorkspaceSwitcherShortcut();
 
   return (
     <div className="flex h-screen bg-gray-950 overflow-hidden">
@@ -26,6 +30,9 @@ const DashboardLayout = () => {
         )}
         {activeModal === "createProject" && (
           <CreateProjectModal onClose={closeModal} />
+        )}
+        {workspaceSwitcherOpen && (
+          <WorkspaceSwitcherModal onClose={closeWorkspaceSwitcher} />
         )}
       </AnimatePresence>
     </div>

@@ -10,7 +10,7 @@ import {
   deleteTaskAPI,
 } from "../api/task.api.js";
 
-// ─── Get all tasks for a project ───────────────────────────────────────────────
+//  Get all tasks for a project ──
 export const useGetTasks = (workspaceId, projectId) => {
   return useQuery({
     queryKey: queryKeys.tasks.byProject(projectId),
@@ -23,15 +23,12 @@ export const useGetTasks = (workspaceId, projectId) => {
   });
 };
 
-// ─── Create task ───────────────────────────────────────────────────────────────
-// Uses invalidateQueries instead of manual cache update.
-// This prevents the duplicate card bug caused by socket also adding the task.
+//  Create task 
 export const useCreateTask = (workspaceId, projectId) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data) => createTaskAPI({ workspaceId, projectId, data }),
     onSuccess: () => {
-      // Refetch from server — single source of truth, no duplicates
       queryClient.invalidateQueries({
         queryKey: queryKeys.tasks.byProject(projectId),
       });
@@ -42,7 +39,7 @@ export const useCreateTask = (workspaceId, projectId) => {
   });
 };
 
-// ─── Update task ───────────────────────────────────────────────────────────────
+//  Update task 
 export const useUpdateTask = (workspaceId, projectId) => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -61,7 +58,7 @@ export const useUpdateTask = (workspaceId, projectId) => {
   });
 };
 
-// ─── Move task — optimistic update with rollback ───────────────────────────────
+//  Move task optimistic update with rollback ─
 export const useMoveTask = (workspaceId, projectId) => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -95,7 +92,7 @@ export const useMoveTask = (workspaceId, projectId) => {
   });
 };
 
-// ─── Reorder tasks — optimistic update with rollback ──────────────────────────
+//  Reorder tasks optimistic update with rollback ──
 export const useReorderTasks = (workspaceId, projectId) => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -131,7 +128,7 @@ export const useReorderTasks = (workspaceId, projectId) => {
   });
 };
 
-// ─── Delete task ───────────────────────────────────────────────────────────────
+//  Delete task 
 export const useDeleteTask = (workspaceId, projectId) => {
   const queryClient = useQueryClient();
   return useMutation({

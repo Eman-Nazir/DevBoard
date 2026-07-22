@@ -1,5 +1,3 @@
-
-
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -33,7 +31,6 @@ const RegisterPage = () => {
     },
   });
 
-  // Ensure fields are always empty whenever this page mounts
   useEffect(() => {
     reset({ name: "", email: "", password: "", confirmPassword: "" });
   }, [reset]);
@@ -41,9 +38,9 @@ const RegisterPage = () => {
   const onSubmit = ({ name, email, password }) => register({ name, email, password });
 
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-white text-2xl font-semibold mb-1">Create an account</h1>
+    <div className="w-full">
+      <div className="mb-5 sm:mb-6">
+        <h1 className="text-white text-xl sm:text-2xl font-semibold mb-1">Create an account</h1>
         <p className="text-gray-400 text-sm">Start managing your projects</p>
       </div>
       <form
@@ -59,8 +56,9 @@ const RegisterPage = () => {
             placeholder="John Doe"
             autoComplete="off"
             className="w-full bg-gray-800 border border-gray-700 text-white placeholder-gray-600 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition"
+            style={{ fontSize: "16px" }}
           />
-          {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name.message}</p>}
+          {errors.name && <p className="text-red-400 text-xs mt-1 break-words">{errors.name.message}</p>}
         </div>
         <div>
           <label className="block text-sm text-gray-400 mb-1.5">Email</label>
@@ -70,8 +68,9 @@ const RegisterPage = () => {
             placeholder="you@company.com"
             autoComplete="off"
             className="w-full bg-gray-800 border border-gray-700 text-white placeholder-gray-600 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition"
+            style={{ fontSize: "16px" }}
           />
-          {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email.message}</p>}
+          {errors.email && <p className="text-red-400 text-xs mt-1 break-words">{errors.email.message}</p>}
         </div>
         <div>
           <label className="block text-sm text-gray-400 mb-1.5">Password</label>
@@ -81,18 +80,20 @@ const RegisterPage = () => {
               type={showPassword ? "text" : "password"}
               placeholder="••••••••"
               autoComplete="new-password"
-              className="w-full bg-gray-800 border border-gray-700 text-white placeholder-gray-600 rounded-lg px-3.5 py-2.5 pr-10 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition"
+              className="w-full bg-gray-800 border border-gray-700 text-white placeholder-gray-600 rounded-lg px-3.5 py-2.5 pr-11 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition"
+              style={{ fontSize: "16px" }}
             />
             <button
               type="button"
               onClick={() => setShowPassword((prev) => !prev)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 active:text-gray-300 transition-colors p-2"
               tabIndex={-1}
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
-          {errors.password && <p className="text-red-400 text-xs mt-1">{errors.password.message}</p>}
+          {errors.password && <p className="text-red-400 text-xs mt-1 break-words">{errors.password.message}</p>}
         </div>
         <div>
           <label className="block text-sm text-gray-400 mb-1.5">Confirm password</label>
@@ -102,23 +103,25 @@ const RegisterPage = () => {
               type={showConfirmPassword ? "text" : "password"}
               placeholder="••••••••"
               autoComplete="new-password"
-              className="w-full bg-gray-800 border border-gray-700 text-white placeholder-gray-600 rounded-lg px-3.5 py-2.5 pr-10 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition"
+              className="w-full bg-gray-800 border border-gray-700 text-white placeholder-gray-600 rounded-lg px-3.5 py-2.5 pr-11 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition"
+              style={{ fontSize: "16px" }}
             />
             <button
               type="button"
               onClick={() => setShowConfirmPassword((prev) => !prev)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+              aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 active:text-gray-300 transition-colors p-2"
               tabIndex={-1}
             >
               {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
-          {errors.confirmPassword && <p className="text-red-400 text-xs mt-1">{errors.confirmPassword.message}</p>}
+          {errors.confirmPassword && <p className="text-red-400 text-xs mt-1 break-words">{errors.confirmPassword.message}</p>}
         </div>
         <button
           type="submit"
           disabled={isPending}
-          className="w-full bg-violet-600 hover:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg py-2.5 text-sm transition-colors mt-2"
+          className="w-full bg-violet-600 hover:bg-violet-500 active:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg py-3 sm:py-2.5 text-sm transition-colors mt-2"
         >
           {isPending ? "Creating account..." : "Create account"}
         </button>

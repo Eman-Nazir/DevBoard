@@ -3,7 +3,8 @@ import path from "path";
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "./public/temp"); // temp folder — file is uploaded to Cloudinary then deleted
+    cb(null, "./public/temp");
+     // temp folder  file is uploaded to Cloudinary then deleted
   },
   filename: (req, file, cb) => {
     // Unique filename: timestamp + original extension
@@ -23,6 +24,6 @@ const fileFilter = (req, file, cb) => {
 
 export const upload = multer({
   storage,
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB max
+  limits: { fileSize: 2 * 1024 * 1024 }, 
   fileFilter,
 });

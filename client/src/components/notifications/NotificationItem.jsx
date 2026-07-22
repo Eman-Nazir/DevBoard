@@ -47,9 +47,9 @@ const NotificationItem = ({ notification }) => {
     <div
       onClick={handleClick}
       className={`
-        group flex items-start gap-3 px-4 py-3.5 cursor-pointer
+        group flex items-start gap-2.5 sm:gap-3 px-3 sm:px-4 py-3 sm:py-3.5 cursor-pointer
         border-b border-gray-800 last:border-0 transition-colors
-        hover:bg-gray-800/50
+        hover:bg-gray-800/50 active:bg-gray-800/70
         ${!notification.isRead ? "bg-violet-600/5" : ""}
       `}
     >
@@ -62,24 +62,30 @@ const NotificationItem = ({ notification }) => {
       </div>
 
       {/* Icon */}
-      <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${colorClass}`}>
-        <Icon size={14} />
+      <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${colorClass}`}>
+        <Icon size={13} className="sm:hidden" />
+        <Icon size={14} className="hidden sm:block" />
       </div>
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <p className={`text-xs leading-relaxed ${notification.isRead ? "text-gray-400" : "text-gray-200"}`}>
+        <p className={`text-xs sm:text-xs leading-relaxed break-words ${notification.isRead ? "text-gray-400" : "text-gray-200"}`}>
           {notification.message}
         </p>
-        <p className="text-gray-600 text-xs mt-0.5">{timeAgo(notification.createdAt)}</p>
+        <p className="text-gray-600 text-[11px] sm:text-xs mt-0.5">{timeAgo(notification.createdAt)}</p>
       </div>
 
-      {/* Delete button */}
       <button
         onClick={handleDelete}
-        className="opacity-0 group-hover:opacity-100 p-1 rounded text-gray-600 hover:text-gray-300 hover:bg-gray-700 transition-all flex-shrink-0"
+        aria-label="Delete notification"
+        className="
+          opacity-100 sm:opacity-0 sm:group-hover:opacity-100
+          p-1.5 sm:p-1 rounded text-gray-600 hover:text-gray-300
+          hover:bg-gray-700 active:bg-gray-700 transition-all flex-shrink-0
+        "
       >
-        <X size={12} />
+        <X size={13} className="sm:hidden" />
+        <X size={12} className="hidden sm:block" />
       </button>
     </div>
   );

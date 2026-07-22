@@ -14,15 +14,15 @@ const AnalyticsPage = () => {
 
   if (isError) {
     return (
-      <div className="h-full flex flex-col -m-6">
+      <div className="h-full flex flex-col -m-4 sm:-m-6">
         <div className="flex-shrink-0 border-b border-gray-800">
           <TabBar workspaceId={workspaceId} projectId={projectId} project={project} />
         </div>
-        <div className="flex items-center justify-center flex-1">
+        <div className="flex items-center justify-center flex-1 px-4">
           <div className="text-center">
             <BarChart2 size={32} className="text-gray-700 mb-3 mx-auto" />
-            <p className="text-gray-400 font-medium">Failed to load analytics</p>
-            <p className="text-gray-600 text-sm mt-1">Try refreshing the page.</p>
+            <p className="text-gray-400 font-medium text-sm sm:text-base">Failed to load analytics</p>
+            <p className="text-gray-600 text-xs sm:text-sm mt-1">Try refreshing the page.</p>
           </div>
         </div>
       </div>
@@ -30,15 +30,15 @@ const AnalyticsPage = () => {
   }
 
   return (
-    <div className="h-full flex flex-col -m-6">
-      {/* ── Header with tabs ─────────────────────────────────────────────────── */}
+    <div className="h-full flex flex-col -m-4 sm:-m-6">
+      {/*  Header with tabs ─ */}
       <div className="flex-shrink-0 border-b border-gray-800">
         <TabBar workspaceId={workspaceId} projectId={projectId} project={project} />
       </div>
 
-      {/* ── Content ───────────────────────────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto p-6">
-        <div className="max-w-5xl mx-auto space-y-6">
+      {/*  Content ─ */}
+      <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+        <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6">
           {/* Stats */}
           <StatsCards summary={data?.summary} isLoading={isLoading} />
 
@@ -46,10 +46,10 @@ const AnalyticsPage = () => {
           {!isLoading && data?.tasksByPriority?.length > 0 && (
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.15 }}
-              className="bg-gray-900 border border-gray-800 rounded-xl p-5"
+              className="bg-gray-900 border border-gray-800 rounded-xl p-4 sm:p-5"
             >
-              <h3 className="text-white font-medium text-sm mb-4">Tasks by priority</h3>
-              <div className="flex gap-3 flex-wrap">
+              <h3 className="text-white font-medium text-sm mb-3 sm:mb-4">Tasks by priority</h3>
+              <div className="flex gap-2 sm:gap-3 flex-wrap">
                 {data.tasksByPriority.map((item) => {
                   const colorMap = {
                     low: "text-green-400 bg-green-400/10 border border-green-400/20",
@@ -58,7 +58,7 @@ const AnalyticsPage = () => {
                     urgent: "text-red-400 bg-red-400/10 border border-red-400/20",
                   };
                   return (
-                    <div key={item._id} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium ${colorMap[item._id] || "text-gray-400 bg-gray-400/10"}`}>
+                    <div key={item._id} className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-medium ${colorMap[item._id] || "text-gray-400 bg-gray-400/10"}`}>
                       <span className="capitalize">{item._id}</span>
                       <span className="font-bold">{item.count}</span>
                     </div>
@@ -69,27 +69,31 @@ const AnalyticsPage = () => {
           )}
 
           {/* Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-            <BurndownChart data={data?.burndownData} isLoading={isLoading} />
-            <VelocityChart data={data?.memberVelocity} isLoading={isLoading} />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
+            <div className="min-w-0 overflow-x-auto">
+              <BurndownChart data={data?.burndownData} isLoading={isLoading} />
+            </div>
+            <div className="min-w-0 overflow-x-auto">
+              <VelocityChart data={data?.memberVelocity} isLoading={isLoading} />
+            </div>
           </div>
 
           {/* Column distribution */}
           {!isLoading && data?.tasksByStatus?.length > 0 && (
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }}
-              className="bg-gray-900 border border-gray-800 rounded-xl p-5"
+              className="bg-gray-900 border border-gray-800 rounded-xl p-4 sm:p-5"
             >
-              <h3 className="text-white font-medium text-sm mb-4">Tasks by column</h3>
+              <h3 className="text-white font-medium text-sm mb-3 sm:mb-4">Tasks by column</h3>
               <div className="space-y-2.5">
                 {data.tasksByStatus.sort((a, b) => b.count - a.count).map((item) => {
                   const pct = data.summary.totalTasks > 0
                     ? Math.round((item.count / data.summary.totalTasks) * 100) : 0;
                   return (
                     <div key={item._id}>
-                      <div className="flex items-center justify-between text-xs mb-1">
-                        <span className="text-gray-400 capitalize">{item._id.replace("-", " ")}</span>
-                        <span className="text-gray-500">{item.count} · {pct}%</span>
+                      <div className="flex items-center justify-between text-xs mb-1 gap-2">
+                        <span className="text-gray-400 capitalize truncate">{item._id.replace("-", " ")}</span>
+                        <span className="text-gray-500 shrink-0">{item.count} · {pct}%</span>
                       </div>
                       <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
                         <motion.div
@@ -114,21 +118,21 @@ const AnalyticsPage = () => {
 // Shared tab bar component
 const TabBar = ({ workspaceId, projectId, project }) => (
   <div>
-    <div className="px-6 pt-3 pb-0">
+    <div className="px-4 sm:px-6 pt-3 pb-0">
       {project && (
-        <h1 className="text-white font-semibold text-base mb-2">{project.name}</h1>
+        <h1 className="text-white font-semibold text-sm sm:text-base mb-2 truncate">{project.name}</h1>
       )}
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-0.5 sm:gap-1 overflow-x-auto scrollbar-hide">
         <Link
           to={`/workspace/${workspaceId}/project/${projectId}/kanban`}
-          className="flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-300 transition-colors"
+          className="flex items-center gap-1.5 px-2.5 sm:px-4 py-2.5 text-xs sm:text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-300 transition-colors whitespace-nowrap shrink-0"
         >
           <Kanban size={14} />
           Kanban
         </Link>
         <Link
           to={`/workspace/${workspaceId}/project/${projectId}/analytics`}
-          className="flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 border-violet-500 text-violet-400 transition-colors"
+          className="flex items-center gap-1.5 px-2.5 sm:px-4 py-2.5 text-xs sm:text-sm font-medium border-b-2 border-violet-500 text-violet-400 transition-colors whitespace-nowrap shrink-0"
         >
           <BarChart2 size={14} />
           Analytics

@@ -1,14 +1,40 @@
 @import "tailwindcss";
 
-
 @layer base {
   * { box-sizing: border-box; }
+  html {
+    /* Stops iOS Safari auto bumping font size when rotating to landscape */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
   body {
     @apply bg-gray-950 text-white antialiased;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    /* Safety net: if any child ever overflows its container on a narrow
+       screen this stops it from creating page-level horizontal scroll
+       instead of just clipping that one element. */
+    overflow-x: hidden;
+    /* Removes the gray flash/box Android Chrome shows on tap */
+    -webkit-tap-highlight-color: transparent;
   }
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { @apply bg-gray-900; }
   ::-webkit-scrollbar-thumb { @apply bg-gray-700 rounded-full; }
   ::-webkit-scrollbar-thumb:hover { @apply bg-gray-600; }
+}
+
+@layer utilities {
+  /* Referenced by ProjectTabBar and usable anywhere an overflow-x-auto
+     scroll strip shouldn't show a visible scrollbar. */
+  .no-scrollbar {
+    scrollbar-width: none;       /* Firefox */
+    -ms-overflow-style: none;    /* old Edge/IE */
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;               /* Chrome/Safari */
+  }
+
+  .safe-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
 }

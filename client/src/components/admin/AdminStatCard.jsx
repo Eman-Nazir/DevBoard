@@ -1,11 +1,14 @@
 import { motion } from "framer-motion";
 
-const AdminStatCard = ({ icon: Icon, label, value, sub, color, delay = 0 }) => (
+const AdminStatCard = ({ icon: Icon, label, value, sub, color, delay = 0, onClick }) => (
   <motion.div
     initial={{ opacity: 0, y: 16 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay }}
-    className="bg-gray-900 border border-gray-800 rounded-xl p-5"
+    onClick={onClick}
+    className={`bg-gray-900 border border-gray-800 rounded-xl p-5 transition-colors ${
+      onClick ? "cursor-pointer hover:border-violet-500/50 hover:bg-gray-800/50" : ""
+    }`}
   >
     <div className="flex items-center justify-between mb-3">
       <p className="text-gray-500 text-xs font-medium uppercase tracking-wide">{label}</p>

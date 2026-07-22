@@ -21,9 +21,9 @@ const CreateProjectModal = ({ onClose }) => {
 
   if (!workspaceId) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="relative bg-gray-900 border border-gray-800 rounded-2xl p-6 w-full max-w-md z-10 text-center">
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="relative bg-gray-900 border border-gray-800 rounded-2xl p-5 sm:p-6 w-full max-w-md z-10 text-center">
           <p className="text-gray-400 text-sm">Please select a workspace first.</p>
           <button onClick={onClose} className="mt-4 text-violet-400 text-sm hover:underline">Close</button>
         </motion.div>
@@ -32,17 +32,17 @@ const CreateProjectModal = ({ onClose }) => {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 10 }}
-        className="relative bg-gray-900 border border-gray-800 rounded-2xl p-6 w-full max-w-md z-10"
+        className="relative bg-gray-900 border border-gray-800 rounded-2xl p-5 sm:p-6 w-full max-w-md z-10 max-h-[92vh] overflow-y-auto"
       >
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="text-white font-semibold text-lg">New project</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-white transition-colors"><X size={18} /></button>
+        <div className="flex items-center justify-between mb-4 sm:mb-5">
+          <h2 className="text-white font-semibold text-base sm:text-lg">New project</h2>
+          <button onClick={onClose} className="text-gray-500 hover:text-white transition-colors shrink-0 p-1 -mr-1"><X size={18} /></button>
         </div>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
@@ -72,7 +72,7 @@ const CreateProjectModal = ({ onClose }) => {
             />
             {errors.githubRepo && <p className="text-red-400 text-xs mt-1">{errors.githubRepo.message}</p>}
           </div>
-          <div className="flex gap-3 pt-1">
+          <div className="flex flex-col-reverse sm:flex-row gap-3 pt-1">
             <button type="button" onClick={onClose} className="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-300 font-medium rounded-lg py-2.5 text-sm transition-colors">Cancel</button>
             <button type="submit" disabled={isPending} className="flex-1 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white font-medium rounded-lg py-2.5 text-sm transition-colors">
               {isPending ? "Creating..." : "Create project"}

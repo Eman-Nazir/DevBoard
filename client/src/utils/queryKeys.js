@@ -1,10 +1,3 @@
-/**
- * Centralized query key factory.
- * Every useQuery / useMutation / invalidateQueries call
- * references these — never raw strings.
- *
- * Pattern: queryKeys.entity.action(params)
- */
 
 export const queryKeys = {
   // Auth

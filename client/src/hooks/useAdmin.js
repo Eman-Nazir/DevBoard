@@ -5,6 +5,8 @@ import {
   getPlatformStatsAPI,
   getAllUsersAPI,
   getAllWorkspacesAPI,
+  getAllProjectsAPI,
+  getAdminLogsAPI,
   deleteUserAPI,
 } from "../api/admin.api.js";
 
@@ -17,6 +19,19 @@ export const useGetPlatformStats = () => {
     },
     staleTime: 60 * 1000,
   });
+};
+
+export const useGetAllProjects = () => {
+  const [page, setPage] = useState(1);
+  const query = useQuery({
+    queryKey: ["admin", "projects", page],
+    queryFn: async () => {
+      const data = await getAllProjectsAPI({ page });
+      return data.data;
+    },
+    staleTime: 30 * 1000,
+  });
+  return { ...query, page, setPage };
 };
 
 export const useGetAllUsers = () => {
@@ -51,6 +66,21 @@ export const useGetAllWorkspaces = () => {
   return { ...query, page, setPage };
 };
 
+export const useGetAdminLogs = () => {
+  const [page, setPage] = useState(1);
+
+  const query = useQuery({
+    queryKey: ["admin", "logs", page],
+    queryFn: async () => {
+      const data = await getAdminLogsAPI({ page });
+      return data.data;
+    },
+    staleTime: 15 * 1000,
+  });
+
+  return { ...query, page, setPage };
+};
+
 export const useDeleteUser = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -58,6 +88,7 @@ export const useDeleteUser = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
       queryClient.invalidateQueries({ queryKey: ["admin", "stats"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "logs"] });
       toast.success("User deleted");
     },
     onError: (err) => toast.error(err.response?.data?.message || "Failed to delete user"),

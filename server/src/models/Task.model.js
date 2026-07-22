@@ -69,14 +69,12 @@ const taskSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// ── Indexes ────────────────────────────────────────────────────────────────────
+// ── Indexes 
 taskSchema.index({ project: 1, columnId: 1, order: 1 });
 taskSchema.index({ workspace: 1, createdAt: -1 });
 taskSchema.index({ assignees: 1 });
 taskSchema.index({ dueDate: 1 });
 
-// ── Auto-set completedAt when task moves to "done" ────────────────────────────
-// async pre-save — no next() needed in modern Mongoose
 taskSchema.pre("save", async function () {
   if (!this.isModified("columnId")) return;
 

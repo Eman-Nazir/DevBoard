@@ -17,11 +17,12 @@ const notificationSchema = new mongoose.Schema(
       required: true,
       enum: [
         "task_assigned",    // Someone assigned you to a task
-        "task_moved",       // A task you're assigned to was moved
-        "task_updated",     // A task you're assigned to was updated
+        "task_moved",       // A task you are assigned to was moved
+        "task_updated",     // A task you are assigned to was updated
         "member_invited",   // You were added to a workspace
         "member_removed",   // You were removed from a workspace
         "project_created",  // A new project was created in your workspace
+        "workspace_ownership_transferred", // You became owner/admin after the previous owner account was deleted
       ],
     },
     message: {
@@ -29,7 +30,7 @@ const notificationSchema = new mongoose.Schema(
       required: true,
       maxlength: 300,
     },
-    // Deep link — frontend navigates here when notification is clicked
+    // — frontend navigates here when notification is clicked
     link: {
       type: String,
       default: "/dashboard",
@@ -38,7 +39,7 @@ const notificationSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    // Context refs — optional, for building rich notification UI
+    // Context refs  optional for building rich notification UI
     workspace: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Workspace",
@@ -58,7 +59,6 @@ const notificationSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Indexes for fast per-user notification queries
 notificationSchema.index({ recipient: 1, createdAt: -1 });
 notificationSchema.index({ recipient: 1, isRead: 1 });
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Bell, Plus } from "lucide-react";
+import { Bell, Plus, Menu } from "lucide-react";
 import { useParams, useMatches } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import useAuthStore from "../../store/authStore.js";
@@ -9,7 +9,7 @@ import NotificationPanel from "../notifications/NotificationPanel.jsx";
 
 const Topbar = () => {
   const { user } = useAuthStore();
-  const { openModal } = useUIStore();
+  const { openModal, openMobileSidebar } = useUIStore();
   const { workspaceId } = useParams();
   const matches = useMatches();
   const [notifOpen, setNotifOpen] = useState(false);
@@ -24,17 +24,26 @@ const Topbar = () => {
     "DevBoard";
 
   return (
-    <header className="h-14 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-5 flex-shrink-0">
-      <h1 className="text-white font-medium text-sm">{title}</h1>
+    <header className="h-14 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-3 sm:px-5 flex-shrink-0 gap-2">
+      <div className="flex items-center gap-2 min-w-0">
+        <button
+          onClick={openMobileSidebar}
+          className="md:hidden p-2 -ml-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-colors flex-shrink-0"
+        >
+          <Menu size={18} />
+        </button>
+        <h1 className="text-white font-medium text-sm truncate">{title}</h1>
+      </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
         {workspaceId && (
           <button
             onClick={() => openModal("createProject")}
-            className="flex items-center gap-1.5 bg-violet-600 hover:bg-violet-500 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors"
+            className="flex items-center gap-1.5 bg-violet-600 hover:bg-violet-500 text-white text-xs font-medium px-2.5 sm:px-3 py-1.5 rounded-lg transition-colors"
           >
             <Plus size={13} />
-            New Project
+            {/* Label hidden on very narrow screens — icon alone stays clear */}
+            <span className="hidden sm:inline">New Project</span>
           </button>
         )}
 
@@ -62,7 +71,7 @@ const Topbar = () => {
         {/* User avatar */}
         <div
           title={user?.name}
-          className="w-8 h-8 rounded-full bg-violet-600 flex items-center justify-center text-white text-xs font-semibold cursor-default"
+          className="w-8 h-8 rounded-full bg-violet-600 flex items-center justify-center text-white text-xs font-semibold cursor-default flex-shrink-0"
         >
           {user?.name?.[0]?.toUpperCase()}
         </div>

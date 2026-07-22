@@ -3,11 +3,11 @@ import { Task } from "../models/Task.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
-// ── Helpers ────────────────────────────────────────────────────────────────────
+// ── Helpers 
 const toObjectId = (id) => new mongoose.Types.ObjectId(id);
 const daysAgo = (days) => new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 
-// ─── Project Analytics ─────────────────────────────────────────────────────────
+// ─── Project Analytics 
 const getProjectAnalytics = asyncHandler(async (req, res) => {
   const { projectId, workspaceId } = req.params;
 
@@ -20,7 +20,7 @@ const getProjectAnalytics = asyncHandler(async (req, res) => {
     memberVelocity,
   ] = await Promise.all([
 
-    // Tasks grouped by column (status)
+    // Tasks grouped by column 
     Task.aggregate([
       {
         $match: {
@@ -121,7 +121,7 @@ const getProjectAnalytics = asyncHandler(async (req, res) => {
   );
 });
 
-// ─── Workspace Analytics ───────────────────────────────────────────────────────
+// ─── Workspace Analytics 
 const getWorkspaceAnalytics = asyncHandler(async (req, res) => {
   const { workspaceId } = req.params;
 

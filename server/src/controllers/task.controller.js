@@ -7,7 +7,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { io } from "../index.js";
 import { createNotification } from "../utils/notification.utils.js";
 
-// ─── Create Task ───────────────────────────────────────────────────────────────
+// ─── Create Task 
 const createTask = asyncHandler(async (req, res) => {
   const { projectId, workspaceId } = req.params;
   const { title, description, columnId, priority, assignees, labels, dueDate } = req.body;
@@ -49,7 +49,7 @@ const createTask = asyncHandler(async (req, res) => {
   // Emit to all users viewing this project in real time
   io.to(`project:${projectId}`).emit("task:created", { task });
 
-  // Notify every assignee (skip self-assignment)
+  // Notify every assignee 
   if (task.assignees?.length > 0) {
     const notifyPromises = task.assignees.map((assignee) =>
       createNotification({
@@ -63,7 +63,7 @@ const createTask = asyncHandler(async (req, res) => {
         taskId: task._id,
       })
     );
-    await Promise.allSettled(notifyPromises); // allSettled — never crash on notification failure
+    await Promise.allSettled(notifyPromises); 
   }
 
   await ActivityLog.create({
@@ -79,7 +79,7 @@ const createTask = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, { task }, "Task created successfully"));
 });
 
-// ─── Get All Tasks for a Project ──────────────────────────────────────────────
+// ─── Get All Tasks for a Project 
 const getTasks = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
 
@@ -94,7 +94,7 @@ const getTasks = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { tasks }, "Tasks fetched successfully"));
 });
 
-// ─── Get Single Task ──────────────────────────────────────────────────────────
+// ─── Get Single Task 
 const getTask = asyncHandler(async (req, res) => {
   const { projectId, id } = req.params;
 
@@ -110,7 +110,7 @@ const getTask = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { task }, "Task fetched successfully"));
 });
 
-// ─── Update Task ───────────────────────────────────────────────────────────────
+// ─── Update Task 
 const updateTask = asyncHandler(async (req, res) => {
   const { projectId, workspaceId, id } = req.params;
   const { title, description, priority, assignees, labels, dueDate } = req.body;
@@ -137,7 +137,7 @@ const updateTask = asyncHandler(async (req, res) => {
   // Emit update to all project viewers
   io.to(`project:${projectId}`).emit("task:updated", { task });
 
-  // Notify only NEWLY added assignees (not those already assigned)
+  // Notify only NEWLY added assignees 
   if (assignees !== undefined) {
     const newAssigneeIds = task.assignees
       .map((a) => a._id.toString())
@@ -173,7 +173,7 @@ const updateTask = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { task }, "Task updated successfully"));
 });
 
-// ─── Move Task (change column) ─────────────────────────────────────────────────
+// ─── Move Task (change column) 
 const moveTask = asyncHandler(async (req, res) => {
   const { projectId, workspaceId, id } = req.params;
   const { columnId, order } = req.body;
@@ -193,7 +193,7 @@ const moveTask = asyncHandler(async (req, res) => {
   const fromColumn = task.columnId;
   task.columnId = columnId;
   task.order = order;
-  await task.save(); // pre-save hook sets completedAt automatically
+  await task.save();
 
   io.to(`project:${projectId}`).emit("task:moved", {
     taskId: id,
@@ -237,7 +237,7 @@ const moveTask = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { task }, "Task moved successfully"));
 });
 
-// ─── Reorder Tasks (bulk update within same column) ────────────────────────────
+// ─── Reorder Tasks bulk update within same column
 const reorderTasks = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
   const { tasks } = req.body;
@@ -246,7 +246,6 @@ const reorderTasks = asyncHandler(async (req, res) => {
     throw new ApiError(400, "tasks array is required");
   }
 
-  // Single DB round trip for all reorders via bulkWrite
   const bulkOps = tasks.map(({ id, order }) => ({
     updateOne: {
       filter: { _id: id, project: projectId },
@@ -263,7 +262,7 @@ const reorderTasks = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "Tasks reordered successfully"));
 });
 
-// ─── Delete Task ──────────────────────────────────────────────────────────────
+// ─── Delete Task 
 const deleteTask = asyncHandler(async (req, res) => {
   const { projectId, workspaceId, id } = req.params;
 

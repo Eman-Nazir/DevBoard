@@ -17,6 +17,7 @@ const Tooltip = ({ children, content, position = "top", className = "" }) => {
       className="relative inline-flex"
       onMouseEnter={() => setVisible(true)}
       onMouseLeave={() => setVisible(false)}
+      onClick={() => setVisible((v) => !v)}
     >
       {children}
       <AnimatePresence>
@@ -27,7 +28,8 @@ const Tooltip = ({ children, content, position = "top", className = "" }) => {
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ duration: 0.1 }}
             className={cn(
-              "absolute z-50 px-2.5 py-1.5 bg-gray-800 border border-gray-700 text-white text-xs rounded-lg whitespace-nowrap pointer-events-none",
+              "absolute z-50 px-2.5 py-1.5 bg-gray-800 border border-gray-700 text-white text-xs rounded-lg pointer-events-none",
+              "max-w-[min(16rem,calc(100vw-2rem))] whitespace-normal sm:whitespace-nowrap",
               positionClasses[position],
               className
             )}
