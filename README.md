@@ -18,7 +18,7 @@
 
 <img src="./docs/demo.gif" alt="DevBoard Pro Demo" width="800" />
 
-Live Demo → (add your deployed link here)
+**[Live Demo →](#)** *(add your deployed link here)*
 
 </div>
 
