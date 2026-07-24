@@ -212,52 +212,51 @@ Built as a portfolio project to demonstrate full-stack engineering skills across
 
 ## 📁 Project Structure
 
+```
 devboard/
-├── docs/ # README media
-│ ├── logo.svg # project logo
-│ ├── demo.gif # demo video converted to GIF
-│ └── screenshots/
-│ ├── 01-landing.png
-│ ├── 02-login.png
-│ ├── 03-dashboard.png
-│ ├── 04-projects.png
-│ ├── 05-kanban.png
-│ ├── 06-task-modal.png
-│ ├── 07-analytics.png
-│ ├── 08-members.png
-│ ├── 09-settings.png
-│ └── 10-admin.png
+├── docs/                            # README media
+│   ├── logo.svg                     # project logo
+│   ├── demo.gif                     # demo video converted to GIF
+│   └── screenshots/
+│       ├── 01-landing.png
+│       ├── 02-login.png
+│       ├── 03-dashboard.png
+│       ├── 04-projects.png
+│       ├── 05-kanban.png
+│       ├── 06-task-modal.png
+│       ├── 07-analytics.png
+│       ├── 08-members.png
+│       ├── 09-settings.png
+│       └── 10-admin.png
 │
-├── client/ # React frontend
-│ └── src/
-│ ├── api/ # Axios API functions
-│ ├── components/
-│ │ ├── admin/ # AdminLayout, AdminTable, AdminStatCard
-│ │ ├── analytics/ # BurndownChart, VelocityChart, StatsCards
-│ │ ├── kanban/ # KanbanBoard, KanbanColumn, TaskCard, TaskModal
-│ │ ├── layout/ # Sidebar, Topbar, DashboardLayout
-│ │ ├── notifications/ # NotificationPanel, NotificationItem
-│ │ └── ui/ # Button, Input, Modal, Badge, Avatar, etc.
-│ ├── hooks/ # useAuth, useWorkspace, useTask, useSocket, etc.
-│ ├── pages/
-│ │ ├── admin/ # AdminOverviewPage, AdminUsersPage, etc.
-│ │ └── modals/ # CreateWorkspaceModal, CreateProjectModal
-│ ├── store/ # Zustand stores (authStore, uiStore)
-│ └── utils/ # queryKeys, cn, formatDate, constants
+├── client/                          # React frontend
+│   └── src/
+│       ├── api/                     # Axios API functions
+│       ├── components/
+│       │   ├── admin/               # AdminLayout, AdminTable, AdminStatCard
+│       │   ├── analytics/           # BurndownChart, VelocityChart, StatsCards
+│       │   ├── kanban/              # KanbanBoard, KanbanColumn, TaskCard, TaskModal
+│       │   ├── layout/              # Sidebar, Topbar, DashboardLayout
+│       │   ├── notifications/       # NotificationPanel, NotificationItem
+│       │   └── ui/                  # Button, Input, Modal, Badge, Avatar, etc.
+│       ├── hooks/                   # useAuth, useWorkspace, useTask, useSocket, etc.
+│       ├── pages/
+│       │   ├── admin/               # AdminOverviewPage, AdminUsersPage, etc.
+│       │   └── modals/              # CreateWorkspaceModal, CreateProjectModal
+│       ├── store/                   # Zustand stores (authStore, uiStore)
+│       └── utils/                   # queryKeys, cn, formatDate, constants
 │
-└── server/ # Node.js backend
-└── src/
-├── config/ # Cloudinary, Nodemailer config
-├── controllers/ # Auth, Workspace, Project, Task, etc.
-├── middleware/ # JWT auth, role check, multer, rate limiter
-├── models/ # User, Workspace, Project, Task, Member, etc.
-├── routes/ # All Express routes
-├── scripts/ # createSuperAdmin seed script
-├── utils/ # ApiError, ApiResponse, asyncHandler, etc.
-└── validators/ # express-validator schemas
-
-
----
+└── server/                          # Node.js backend
+    └── src/
+        ├── config/                  # Cloudinary, Nodemailer config
+        ├── controllers/             # Auth, Workspace, Project, Task, etc.
+        ├── middleware/              # JWT auth, role check, multer, rate limiter
+        ├── models/                  # User, Workspace, Project, Task, Member, etc.
+        ├── routes/                  # All Express routes
+        ├── scripts/                 # createSuperAdmin seed script
+        ├── utils/                   # ApiError, ApiResponse, asyncHandler, etc.
+        └── validators/              # express-validator schemas
+```
 
 ## 🔑 Role Permissions
 
@@ -367,87 +366,85 @@ For regular users → register at `/register`.
 ## 📡 API Endpoints
 
 ### Auth
-
-POST /api/v1/auth/register
-POST /api/v1/auth/login
-POST /api/v1/auth/logout
-POST /api/v1/auth/refresh-token
-GET /api/v1/auth/me
-PATCH /api/v1/auth/profile
-PATCH /api/v1/auth/change-password
-
+```
+POST   /api/v1/auth/register
+POST   /api/v1/auth/login
+POST   /api/v1/auth/logout
+POST   /api/v1/auth/refresh-token
+GET    /api/v1/auth/me
+PATCH  /api/v1/auth/profile
+PATCH  /api/v1/auth/change-password
+```
 
 ### Workspaces
-
-POST /api/v1/workspaces
-GET /api/v1/workspaces
-GET /api/v1/workspaces/:id
-PATCH /api/v1/workspaces/:id
+```
+POST   /api/v1/workspaces
+GET    /api/v1/workspaces
+GET    /api/v1/workspaces/:id
+PATCH  /api/v1/workspaces/:id
 DELETE /api/v1/workspaces/:id
-POST /api/v1/workspaces/join/:code
-POST /api/v1/workspaces/:id/invite
-GET /api/v1/workspaces/:id/activity
-
+POST   /api/v1/workspaces/join/:code
+POST   /api/v1/workspaces/:id/invite
+GET    /api/v1/workspaces/:id/activity
+```
 
 ### Members
-
-GET /api/v1/workspaces/:workspaceId/members
-PATCH /api/v1/workspaces/:workspaceId/members/:userId
+```
+GET    /api/v1/workspaces/:workspaceId/members
+PATCH  /api/v1/workspaces/:workspaceId/members/:userId
 DELETE /api/v1/workspaces/:workspaceId/members/:userId
-
+```
 
 ### Projects
-
-POST /api/v1/workspaces/:workspaceId/projects
-GET /api/v1/workspaces/:workspaceId/projects
-GET /api/v1/workspaces/:workspaceId/projects/archived
-GET /api/v1/workspaces/:workspaceId/projects/:id
-PATCH /api/v1/workspaces/:workspaceId/projects/:id
+```
+POST   /api/v1/workspaces/:workspaceId/projects
+GET    /api/v1/workspaces/:workspaceId/projects
+GET    /api/v1/workspaces/:workspaceId/projects/archived
+GET    /api/v1/workspaces/:workspaceId/projects/:id
+PATCH  /api/v1/workspaces/:workspaceId/projects/:id
 DELETE /api/v1/workspaces/:workspaceId/projects/:id
-
+```
 
 ### Tasks
-
-POST /api/v1/workspaces/:workspaceId/projects/:projectId/tasks
-GET /api/v1/workspaces/:workspaceId/projects/:projectId/tasks
-PATCH /api/v1/workspaces/:workspaceId/projects/:projectId/tasks/:id
-PATCH /api/v1/workspaces/:workspaceId/projects/:projectId/tasks/:id/move
-PATCH /api/v1/workspaces/:workspaceId/projects/:projectId/tasks/reorder
+```
+POST   /api/v1/workspaces/:workspaceId/projects/:projectId/tasks
+GET    /api/v1/workspaces/:workspaceId/projects/:projectId/tasks
+PATCH  /api/v1/workspaces/:workspaceId/projects/:projectId/tasks/:id
+PATCH  /api/v1/workspaces/:workspaceId/projects/:projectId/tasks/:id/move
+PATCH  /api/v1/workspaces/:workspaceId/projects/:projectId/tasks/reorder
 DELETE /api/v1/workspaces/:workspaceId/projects/:projectId/tasks/:id
-
+```
 
 ### Notifications
-
-GET /api/v1/notifications
-GET /api/v1/notifications/unread-count
-PATCH /api/v1/notifications/read-all
-PATCH /api/v1/notifications/:id/read
+```
+GET    /api/v1/notifications
+GET    /api/v1/notifications/unread-count
+PATCH  /api/v1/notifications/read-all
+PATCH  /api/v1/notifications/:id/read
 DELETE /api/v1/notifications/:id
 DELETE /api/v1/notifications/clear-read
-
+```
 
 ### Analytics
-
-GET /api/v1/workspaces/:workspaceId/projects/:projectId/analytics
-GET /api/v1/workspaces/:workspaceId/analytics
-GET /api/v1/workspaces/:workspaceId/projects/:projectId/tasks/export
-
+```
+GET    /api/v1/workspaces/:workspaceId/projects/:projectId/analytics
+GET    /api/v1/workspaces/:workspaceId/analytics
+GET    /api/v1/workspaces/:workspaceId/projects/:projectId/tasks/export
+```
 
 ### Admin (Super Admin only)
-
-GET /api/v1/admin/stats
-GET /api/v1/admin/users
-GET /api/v1/admin/workspaces
-GET /api/v1/admin/projects
+```
+GET    /api/v1/admin/stats
+GET    /api/v1/admin/users
+GET    /api/v1/admin/workspaces
+GET    /api/v1/admin/projects
 DELETE /api/v1/admin/users/:id
-
+```
 
 ### Webhooks
-
-POST /api/v1/webhooks/github
-
-
----
+```
+POST   /api/v1/webhooks/github
+```
 
 ## 🔌 Socket Events
 
