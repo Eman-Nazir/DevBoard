@@ -8,58 +8,115 @@ import { io } from "../index.js";
 
 const verifyGithubSignature = (req) => {
   const signature = req.headers["x-hub-signature-256"];
-  if (!signature) return false;
 
-  const hmac = crypto.createHmac("sha256", process.env.GITHUB_WEBHOOK_SECRET);
-  const digest = "sha256=" + hmac.update(JSON.stringify(req.body)).digest("hex");
+  if (!signature) {
+    return false;
+  }
 
-  // timingSafeEqual prevents timing attacks
+  const hmac = crypto.createHmac(
+    "sha256",
+    process.env.GITHUB_WEBHOOK_SECRET
+  );
+
+  const digest =
+    "sha256=" + hmac.update(req.body).digest("hex");
+
+  const signatureBuffer = Buffer.from(signature);
+  const digestBuffer = Buffer.from(digest);
+
+  if (signatureBuffer.length !== digestBuffer.length) {
+    return false;
+  }
+
   return crypto.timingSafeEqual(
-    Buffer.from(signature),
-    Buffer.from(digest)
+    signatureBuffer,
+    digestBuffer
   );
 };
 
-// ─── GitHub Webhook Handler 
+
+// ─── GitHub Webhook Handler ──────────
 const handleGithubWebhook = asyncHandler(async (req, res) => {
-  // Verify signature first  reject anything that does not  match
+
+  // Verify GitHub signature first
   if (!verifyGithubSignature(req)) {
-    return res.status(401).json({ success: false, message: "Invalid webhook signature" });
+    return res.status(401).json({
+      success: false,
+      message: "Invalid webhook signature",
+    });
   }
 
   const event = req.headers["x-github-event"];
-  const payload = req.body;
+
+  // req.body is a Buffer because we used express.raw()
+  const payload = JSON.parse(req.body.toString());
 
   // Find the project linked to this GitHub repo
   const repoUrl = payload.repository?.html_url;
+
   if (!repoUrl) {
-    return res.status(200).json(new ApiResponse(200, {}, "No repo URL in payload"));
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {},
+        "No repo URL in payload"
+      )
+    );
   }
 
-  const project = await Project.findOne({ githubRepo: repoUrl })
-    .populate({ path: "workspace", select: "_id owner" })
+  const project = await Project.findOne({
+    githubRepo: repoUrl
+  })
+    .populate({
+      path: "workspace",
+      select: "_id owner"
+    })
     .lean();
 
   if (!project) {
-    return res.status(200).json(new ApiResponse(200, {}, "No project linked to this repo"));
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {},
+        "No project linked to this repo"
+      )
+    );
   }
 
-  const actorId = project.createdBy || project.workspace?.owner;
+  const actorId =
+    project.createdBy ||
+    project.workspace?.owner;
 
   if (!actorId) {
-    return res.status(200).json(new ApiResponse(200, {}, "No valid actor for this event, skipped logging"));
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {},
+        "No valid actor for this event, skipped logging"
+      )
+    );
   }
 
   let action = null;
   let meta = {};
 
-  // ── Handle push events 
+
+  // ── Handle push events ─────────────
   if (event === "push") {
-    const branch = payload.ref?.replace("refs/heads/", "");
+
+    const branch = payload.ref?.replace(
+      "refs/heads/",
+      ""
+    );
+
     const commits = payload.commits || [];
-    const pusher = payload.pusher?.name || "Unknown";
+
+    const pusher =
+      payload.pusher?.name ||
+      "Unknown";
 
     action = "github_push";
+
     meta = {
       branch,
       commitCount: commits.length,
@@ -69,25 +126,38 @@ const handleGithubWebhook = asyncHandler(async (req, res) => {
     };
   }
 
-  // ── Handle pull_request events 
+
+  // ── Handle pull_request events ────
   else if (event === "pull_request") {
+
     const pr = payload.pull_request;
+
     action = "github_pr";
+
     meta = {
       prTitle: pr?.title,
-      prState: payload.action, 
+      prState: payload.action,
       prNumber: pr?.number,
       author: pr?.user?.login,
       repoName: payload.repository?.name,
     };
   }
 
-  // Unhandled event type  acknowledge and skip
+
+  // ── Unhandled event type ───────────
   else {
-    return res.status(200).json(new ApiResponse(200, {}, `Event ${event} acknowledged but not handled`));
+
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {},
+        `Event ${event} acknowledged but not handled`
+      )
+    );
   }
 
-  // Save to activity log
+
+  // ── Save activity log 
   await ActivityLog.create({
     workspace: project.workspace._id,
     project: project._id,
@@ -96,9 +166,27 @@ const handleGithubWebhook = asyncHandler(async (req, res) => {
     meta,
   });
 
-  io.to(`project:${project._id}`).emit("github:event", { event, meta });
 
-  return res.status(200).json(new ApiResponse(200, {}, "Webhook processed"));
+  // ── Notify connected project users 
+  io.to(`project:${project._id}`).emit(
+    "github:event",
+    {
+      event,
+      meta
+    }
+  );
+
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {},
+      "Webhook processed"
+    )
+  );
 });
 
-export { handleGithubWebhook };
+
+export {
+  handleGithubWebhook
+};
