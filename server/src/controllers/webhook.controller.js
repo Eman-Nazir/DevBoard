@@ -40,7 +40,7 @@ console.log("Calculated Digest:", digest);
   return crypto.timingSafeEqual(signatureBuffer, digestBuffer);
 };
 
-
+console.log("=== GitHub webhook controller reached ===");
 // ─── GitHub Webhook Handler ──────────
 const handleGithubWebhook = asyncHandler(async (req, res) => {
 console.log("=== GitHub webhook reached ===");

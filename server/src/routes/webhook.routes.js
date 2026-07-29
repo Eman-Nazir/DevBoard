@@ -3,9 +3,11 @@ import { handleGithubWebhook } from "../controllers/webhook.controller.js";
 
 const router = Router();
 
+router.use((req, res, next) => {
+  console.log("Webhook route hit:", req.method, req.originalUrl);
+  next();
+});
 
-//   POST /api/v1/webhooks/github
- 
 router.post("/github", handleGithubWebhook);
 
 export default router;
