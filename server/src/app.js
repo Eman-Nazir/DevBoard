@@ -35,7 +35,6 @@ app.use(apiLimiter);
 
 
 // ── GitHub Webhook 
-// IMPORTANT: This must be BEFORE express.json()
 app.use(
   "/api/v1/webhooks/github",
   express.raw({ type: "application/json" })
