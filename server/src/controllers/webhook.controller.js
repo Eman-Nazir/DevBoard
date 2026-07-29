@@ -25,6 +25,9 @@ const verifyGithubSignature = (req) => {
 
   console.log("GitHub Signature :", signature);
   console.log("Calculated Digest:", digest);
+  console.log("Secret:", process.env.GITHUB_WEBHOOK_SECRET);
+console.log("GitHub Signature:", signature);
+console.log("Calculated Digest:", digest);
 
   const signatureBuffer = Buffer.from(signature);
   const digestBuffer = Buffer.from(digest);
