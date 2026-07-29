@@ -40,61 +40,70 @@ console.log("Calculated Digest:", digest);
   return crypto.timingSafeEqual(signatureBuffer, digestBuffer);
 };
 
-console.log("=== GitHub webhook controller reached ===");
+
+
+
 // ─── GitHub Webhook Handler ──────────
 const handleGithubWebhook = asyncHandler(async (req, res) => {
-console.log("=== GitHub webhook reached ===");
+  console.log("=== GitHub webhook reached ===");
 
   // Verify GitHub signature first
   if (!verifyGithubSignature(req)) {
+    console.log(" Signature verification failed");
     return res.status(401).json({
       success: false,
       message: "Invalid webhook signature",
     });
   }
 
+  console.log(" Signature verified");
+
   const event = req.headers["x-github-event"];
+  console.log("Event:", event);
 
   // req.body is a Buffer because we used express.raw()
   const payload = JSON.parse(req.body.toString());
 
-  // Find the project linked to this GitHub repo
   const repoUrl = payload.repository?.html_url;
+  console.log("Repo URL:", repoUrl);
 
   if (!repoUrl) {
+    console.log("No repository URL");
     return res.status(200).json(
-      new ApiResponse(
-        200,
-        {},
-        "No repo URL in payload"
-      )
+      new ApiResponse(200, {}, "No repo URL in payload")
     );
   }
 
+  console.log("Before Project.findOne()");
+
   const project = await Project.findOne({
-    githubRepo: repoUrl
+    githubRepo: repoUrl,
   })
     .populate({
       path: "workspace",
-      select: "_id owner"
+      select: "_id owner",
     })
     .lean();
 
+  console.log("After Project.findOne()");
+
   if (!project) {
+    console.log("No linked project");
     return res.status(200).json(
-      new ApiResponse(
-        200,
-        {},
-        "No project linked to this repo"
-      )
+      new ApiResponse(200, {}, "No project linked to this repo")
     );
   }
+
+  console.log("Project found:", project._id);
 
   const actorId =
     project.createdBy ||
     project.workspace?.owner;
 
+  console.log("Actor:", actorId);
+
   if (!actorId) {
+    console.log("No actor found");
     return res.status(200).json(
       new ApiResponse(
         200,
@@ -107,20 +116,10 @@ console.log("=== GitHub webhook reached ===");
   let action = null;
   let meta = {};
 
-
-  // ── Handle push events ─────────────
   if (event === "push") {
-
-    const branch = payload.ref?.replace(
-      "refs/heads/",
-      ""
-    );
-
+    const branch = payload.ref?.replace("refs/heads/", "");
     const commits = payload.commits || [];
-
-    const pusher =
-      payload.pusher?.name ||
-      "Unknown";
+    const pusher = payload.pusher?.name || "Unknown";
 
     action = "github_push";
 
@@ -131,12 +130,7 @@ console.log("=== GitHub webhook reached ===");
       message: commits[0]?.message || "",
       repoName: payload.repository?.name,
     };
-  }
-
-
-  // ── Handle pull_request events ────
-  else if (event === "pull_request") {
-
+  } else if (event === "pull_request") {
     const pr = payload.pull_request;
 
     action = "github_pr";
@@ -148,11 +142,8 @@ console.log("=== GitHub webhook reached ===");
       author: pr?.user?.login,
       repoName: payload.repository?.name,
     };
-  }
-
-
-  // ── Unhandled event type ───────────
-  else {
+  } else {
+    console.log("Unhandled event:", event);
 
     return res.status(200).json(
       new ApiResponse(
@@ -163,8 +154,8 @@ console.log("=== GitHub webhook reached ===");
     );
   }
 
+  console.log("Before ActivityLog.create()");
 
-  // ── Save activity log 
   await ActivityLog.create({
     workspace: project.workspace._id,
     project: project._id,
@@ -173,23 +164,21 @@ console.log("=== GitHub webhook reached ===");
     meta,
   });
 
+  console.log("After ActivityLog.create()");
 
-  // ── Notify connected project users 
-  io.to(`project:${project._id}`).emit(
-    "github:event",
-    {
-      event,
-      meta
-    }
-  );
+  console.log("Before socket emit");
 
+  io.to(`project:${project._id}`).emit("github:event", {
+    event,
+    meta,
+  });
+
+  console.log("After socket emit");
+
+  console.log("Sending success response");
 
   return res.status(200).json(
-    new ApiResponse(
-      200,
-      {},
-      "Webhook processed"
-    )
+    new ApiResponse(200, {}, "Webhook processed")
   );
 });
 
