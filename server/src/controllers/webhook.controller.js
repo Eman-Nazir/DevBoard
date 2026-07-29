@@ -43,6 +43,7 @@ console.log("Calculated Digest:", digest);
 
 // ─── GitHub Webhook Handler ──────────
 const handleGithubWebhook = asyncHandler(async (req, res) => {
+console.log("=== GitHub webhook reached ===");
 
   // Verify GitHub signature first
   if (!verifyGithubSignature(req)) {
