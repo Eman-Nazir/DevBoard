@@ -10,28 +10,31 @@ const verifyGithubSignature = (req) => {
   const signature = req.headers["x-hub-signature-256"];
 
   if (!signature) {
+    console.log("No GitHub signature header");
     return false;
   }
+
+  console.log("Secret:", process.env.GITHUB_WEBHOOK_SECRET);
 
   const hmac = crypto.createHmac(
     "sha256",
     process.env.GITHUB_WEBHOOK_SECRET
   );
 
-  const digest =
-    "sha256=" + hmac.update(req.body).digest("hex");
+  const digest = "sha256=" + hmac.update(req.body).digest("hex");
+
+  console.log("GitHub Signature :", signature);
+  console.log("Calculated Digest:", digest);
 
   const signatureBuffer = Buffer.from(signature);
   const digestBuffer = Buffer.from(digest);
 
   if (signatureBuffer.length !== digestBuffer.length) {
+    console.log("Length mismatch");
     return false;
   }
 
-  return crypto.timingSafeEqual(
-    signatureBuffer,
-    digestBuffer
-  );
+  return crypto.timingSafeEqual(signatureBuffer, digestBuffer);
 };
 
 
