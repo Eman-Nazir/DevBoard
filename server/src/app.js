@@ -79,4 +79,15 @@ app.use("/api/v1/webhooks", webhookRoutes);
 app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/dashboard", dashboardRoutes);
 
+// ── 404 handler ─
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: `Route ${req.originalUrl} not found`,
+  });
+});
 
+// ── Global error handler ─
+app.use(errorMiddleware);
+
+export { app };
