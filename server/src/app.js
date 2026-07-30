@@ -53,6 +53,17 @@ if (process.env.NODE_ENV === "development") {
 }
 
 
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'DevBoard API is running',
+    version: '1.0.0'
+  });
+});
+
+
+
+
 // ── Health check 
 app.get("/api/v1/health", (req, res) => {
   res.json({
