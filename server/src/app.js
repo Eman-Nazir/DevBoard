@@ -76,18 +76,18 @@ app.get("/api/v1/health", (req, res) => {
 
 
 // ── Routes ──────
+// ── Routes ──────
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/workspaces", workspaceRoutes);
 app.use("/api/v1/workspaces/:workspaceId/members", memberRoutes);
 app.use("/api/v1/workspaces/:workspaceId/projects", projectRoutes);
 app.use("/api/v1/workspaces/:workspaceId/projects/:projectId/tasks", taskRoutes);
 app.use("/api/v1/notifications", notificationRoutes);
-app.use("/api/v1", analyticsRoutes);
-
 app.use("/api/v1/webhooks", webhookRoutes);
-
 app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/dashboard", dashboardRoutes);
+
+app.use("/api/v1", analyticsRoutes);   
 
 // ── 404 handler ─
 app.use((req, res) => {
