@@ -18,7 +18,7 @@
 
 <img src="./docs/demo.gif" alt="DevBoard Pro Demo" width="800" />
 
-**[Live Demo →](#)** *https://dev-board-five.vercel.app/dashboard*
+**[Live Demo →](#)** *https://dev-board-five.vercel.app/*
 
 </div>
 
